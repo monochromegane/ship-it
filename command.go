@@ -10,21 +10,53 @@ import (
 
 type Command struct {
 	command string
+	wrapper CommandWrapper
+}
+
+type CommandWrapper interface {
+	Wrap(cmd string, dest Destination) string
+}
+
+type Local struct{}
+
+func (l Local) Wrap(cmd string, dest Destination) string {
+	return cmd
+}
+
+type Remote struct{}
+
+func (r Remote) Wrap(cmd string, dest Destination) string {
+	var port, identify, config, user string
+	if dest.Port != 0 {
+		port = fmt.Sprintf("-p %d ", dest.Port)
+	}
+	if dest.Identify != "" {
+		identify = fmt.Sprintf("-i %s ", dest.Identify)
+	}
+	if dest.Config != "" {
+		config = fmt.Sprintf("-F %s ", dest.Config)
+	}
+	if dest.User != "" {
+		user = fmt.Sprintf("%s@", dest.User)
+	}
+	return fmt.Sprintf("ssh %s%s%s%s%s %s", port, config, identify, user, dest.Host, cmd)
 }
 
 func LocalCommand(cmd string) Command {
-	return Command{cmd}
+	return Command{command: cmd, wrapper: Local{}}
 }
 
 func RemoteCommand(cmd string) Command {
-	return Command{"ssh {{.User}}@{{.Host}} " + cmd}
+	return Command{command: cmd, wrapper: Remote{}}
 }
 
 func (c Command) Exec(dest Destination) error {
 
+	command := c.wrapper.Wrap(c.command, dest)
+
 	// apply template
 	var b bytes.Buffer
-	t, err := template.New("cmd").Parse(c.command)
+	t, err := template.New("cmd").Parse(command)
 	if err != nil {
 		return err
 	}
@@ -34,7 +66,7 @@ func (c Command) Exec(dest Destination) error {
 		return err
 	}
 
-	command := b.String()
+	command = b.String()
 	fmt.Println(command)
 
 	// execute command

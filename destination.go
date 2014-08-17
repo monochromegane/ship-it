@@ -4,6 +4,9 @@ type Destination struct {
 	Name      string
 	Host      string
 	User      string
+	Config    string
+	Identify  string
+	Port      int
 	Variables Variables
 }
 
