@@ -3,6 +3,7 @@ package ship
 type Destination struct {
 	Name      string
 	Host      string
+	User      string
 	Variables Variables
 }
 

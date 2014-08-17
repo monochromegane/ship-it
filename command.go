@@ -8,13 +8,23 @@ import (
 	"strings"
 )
 
-type Command string
+type Command struct {
+	command string
+}
+
+func LocalCommand(cmd string) Command {
+	return Command{cmd}
+}
+
+func RemoteCommand(cmd string) Command {
+	return Command{"ssh {{.User}}@{{.Host}} " + cmd}
+}
 
 func (c Command) Exec(dest Destination) error {
 
 	// apply template
 	var b bytes.Buffer
-	t, err := template.New("cmd").Parse(string(c))
+	t, err := template.New("cmd").Parse(c.command)
 	if err != nil {
 		return err
 	}
