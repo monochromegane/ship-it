@@ -1,5 +1,18 @@
 package ship
 
+var dests destinations
+
+type destinations []*destination
+
+func (d destinations) find(key string) (*destination, bool) {
+	for _, dest := range d {
+		if dest.name == key {
+			return dest, true
+		}
+	}
+	return nil, false
+}
+
 type destination struct {
 	name      string
 	host      string
@@ -10,16 +23,22 @@ type destination struct {
 	variables Variables
 }
 
-func (d destination) Var(key string) string {
-	return d.variables.Get(key)
-}
-
 func Destination(name, host string) *destination {
-	return &destination{
+	dest := &destination{
 		name:      name,
 		host:      host,
 		variables: Variables{},
 	}
+	dests = append(dests, dest)
+	return dest
+}
+
+func Find(key string) (*destination, bool) {
+	return dests.find(key)
+}
+
+func (d destination) Var(key string) string {
+	return d.variables.Get(key)
 }
 
 func (d *destination) User(user string) *destination {
