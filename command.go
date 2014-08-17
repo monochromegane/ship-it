@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"os/exec"
+	"strings"
 )
 
 type Command string
@@ -22,7 +24,18 @@ func (c Command) Exec(dest Destination) error {
 		return err
 	}
 
-	fmt.Println(b.String())
+	command := b.String()
+	fmt.Println(command)
+
+	// execute command
+	sep := strings.Fields(command)
+	cmd := sep[0]
+	args := sep[1:len(sep)]
+	out, err := exec.Command(cmd, args...).Output()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s\n", out)
 
 	return nil
 }
