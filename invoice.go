@@ -39,6 +39,10 @@ func (i *invoice) Remote(cmd string) *invoice {
 	return i.command(remoteCommand(cmd))
 }
 
+func (i *invoice) CopyTo(src, dest string) *invoice {
+	return i.command(copyToCommand(src, dest))
+}
+
 func (i *invoice) command(cmd Command) *invoice {
 	i.commands = append(i.commands, cmd)
 	return i

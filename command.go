@@ -42,12 +42,38 @@ func (r Remote) Wrap(cmd string, dest *destination) string {
 	return fmt.Sprintf("ssh %s%s%s%s%s %s", port, config, identify, user, dest.host, cmd)
 }
 
+type CopyTo struct {
+	src  string
+	dest string
+}
+
+func (c CopyTo) Wrap(cmd string, dest *destination) string {
+	var port, identify, config, user string
+	if dest.port != 0 {
+		port = fmt.Sprintf("-P %d ", dest.port)
+	}
+	if dest.identify != "" {
+		identify = fmt.Sprintf("-i %s ", dest.identify)
+	}
+	if dest.config != "" {
+		config = fmt.Sprintf("-F %s ", dest.config)
+	}
+	if dest.user != "" {
+		user = fmt.Sprintf("%s@", dest.user)
+	}
+	return fmt.Sprintf("scp %s%s%s %s %s%s:%s", port, config, identify, c.src, user, dest.host, c.dest)
+}
+
 func localCommand(cmd string) Command {
 	return Command{command: cmd, wrapper: Local{}}
 }
 
 func remoteCommand(cmd string) Command {
 	return Command{command: cmd, wrapper: Remote{}}
+}
+
+func copyToCommand(src, dest string) Command {
+	return Command{command: "", wrapper: CopyTo{src, dest}}
 }
 
 func (c Command) Exec(dest *destination) error {
