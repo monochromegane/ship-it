@@ -14,18 +14,18 @@ type Command struct {
 }
 
 type CommandWrapper interface {
-	Wrap(cmd string, dest destination) string
+	Wrap(cmd string, dest *destination) string
 }
 
 type Local struct{}
 
-func (l Local) Wrap(cmd string, dest destination) string {
+func (l Local) Wrap(cmd string, dest *destination) string {
 	return cmd
 }
 
 type Remote struct{}
 
-func (r Remote) Wrap(cmd string, dest destination) string {
+func (r Remote) Wrap(cmd string, dest *destination) string {
 	var port, identify, config, user string
 	if dest.port != 0 {
 		port = fmt.Sprintf("-p %d ", dest.port)
@@ -50,7 +50,7 @@ func remoteCommand(cmd string) Command {
 	return Command{command: cmd, wrapper: Remote{}}
 }
 
-func (c Command) Exec(dest destination) error {
+func (c Command) Exec(dest *destination) error {
 
 	command := c.wrapper.Wrap(c.command, dest)
 

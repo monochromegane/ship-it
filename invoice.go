@@ -27,7 +27,7 @@ func Invoice(name string) *invoice {
 	return invoice
 }
 
-func FindInvoice(name string) (*invoice, bool) {
+func findInvoice(name string) (*invoice, bool) {
 	return invs.find(name)
 }
 
@@ -44,7 +44,7 @@ func (i *invoice) command(cmd Command) *invoice {
 	return i
 }
 
-func (i invoice) SendTo(dest destination) {
+func (i invoice) sendTo(dest *destination) {
 	for _, cmd := range i.commands {
 		cmd.Exec(dest)
 	}
