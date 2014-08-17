@@ -42,11 +42,11 @@ func (r Remote) Wrap(cmd string, dest destination) string {
 	return fmt.Sprintf("ssh %s%s%s%s%s %s", port, config, identify, user, dest.host, cmd)
 }
 
-func LocalCommand(cmd string) Command {
+func localCommand(cmd string) Command {
 	return Command{command: cmd, wrapper: Local{}}
 }
 
-func RemoteCommand(cmd string) Command {
+func remoteCommand(cmd string) Command {
 	return Command{command: cmd, wrapper: Remote{}}
 }
 

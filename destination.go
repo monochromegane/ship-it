@@ -33,8 +33,8 @@ func Destination(name, host string) *destination {
 	return dest
 }
 
-func Find(key string) (*destination, bool) {
-	return dests.find(key)
+func FindDestination(name string) (*destination, bool) {
+	return dests.find(name)
 }
 
 func (d destination) Var(key string) string {
