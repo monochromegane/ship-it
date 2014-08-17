@@ -69,6 +69,10 @@ func (c Command) Exec(dest *destination) error {
 	command = b.String()
 	fmt.Println(command)
 
+	if opts.DryRun {
+		return nil
+	}
+
 	// execute command
 	sep := strings.Fields(command)
 	cmd := sep[0]
